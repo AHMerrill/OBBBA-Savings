@@ -50,7 +50,7 @@ st.pyplot(fig)
 # Show balances at specific ages
 st.subheader("Balances at Key Ages")
 
-for target_age in [18, 30, 60]:
+for target_age in [18, 30, 60, 65]:
     if target_age <= end_age:
         bal = balance[target_age]
         st.write(f"Balance at age {target_age}: {millions(bal, None)}")
