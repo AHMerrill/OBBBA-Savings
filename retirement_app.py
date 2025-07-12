@@ -7,8 +7,8 @@ st.title("Growth of Savings Account Over Time")
 
 # Sidebar sliders
 start_age = st.sidebar.slider("Start Saving Age", 0, 17, 0, step=1)
-contribution = st.sidebar.slider("Annual Contribution ($)", 0, 5000, 5000, step=100)
-interest_rate = st.sidebar.slider("Interest Rate (%)", 0.0, 15.0, 8.0, step=0.1)
+contribution = st.sidebar.slider("Annual Contribution ($)", 0, 5000, 0, step=100)
+interest_rate = st.sidebar.slider("Interest Rate (%)", 0.0, 15.0, 10.0, step=0.1)
 stop_contrib_age = st.sidebar.slider("Stop Contributing Age", 0, 17, 17, step=1)
 
 # Run calculations
