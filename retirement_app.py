@@ -21,15 +21,20 @@ for i, age in enumerate(years):
     if i == 0:
         balance[i] = initial_gov_contribution
     else:
-        balance[i] = balance[i - 1] * (1 + (interest_rate / 100))
+        balance[i] = balance[i - 1]
+        
+        # Add contribution first
         if start_age <= age <= stop_contrib_age:
             balance[i] += contribution
+        
+        # Grow the result
+        balance[i] *= (1 + (interest_rate / 100))
 
 # Create plot
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.plot(years, balance, color='blue', linewidth=2)
 ax.axvline(start_age, color='green', linestyle='--', label=f"Start Saving Age: {start_age}")
-ax.axvline(stop_contrib_age, color='red', linestyle='--', label=f"Stop Contrib Age: {stop_contrib_age}")
+ax.axvline(stop_contrib_age + 1, color='red', linestyle='--', label=f"Stop Contrib Age: {stop_contrib_age}")
 
 def millions(x, pos):
     if abs(x) >= 1_000_000:
