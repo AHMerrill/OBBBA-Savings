@@ -3,34 +3,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
-st.title("Growth of Savings Account Over Time")
+st.title("Growth of Freedom Savings Account Over Time")
 
 # Sidebar sliders
-start_age = st.sidebar.slider("Start Saving Age", 0, 20, 0, step=1)
+birth_year = st.sidebar.number_input("Birth Year", min_value=2000, max_value=2100, value=2025, step=1)
 contribution = st.sidebar.slider("Annual Contribution ($)", 0, 5000, 5000, step=100)
-interest_rate = st.sidebar.slider("Interest Rate (%) - Adjust for Inflation!", 1.0, 12.0, 5.75, step=0.1)
-stop_contrib_age = st.sidebar.slider("Stop Contributing Age", 0, 60, 25, step=1)
+interest_rate = st.sidebar.slider("Interest Rate (%)", 0.0, 15.0, 8.0, step=0.1)
+stop_contrib_age = st.sidebar.slider("Stop Contributing Age", 0, 17, 17, step=1)
 
-# Run calculations
-initial_gov_contribution = 1000
+# Timeline of years
 end_age = 65
-years = np.arange(0, end_age + 1)
+years = np.arange(birth_year, birth_year + end_age + 1)
+ages = np.arange(0, len(years))
+
+# Initialize balance array
 balance = np.zeros_like(years, dtype=float)
 
-for i, age in enumerate(years):
+# Loop through each year
+for i, (year, age) in enumerate(zip(years, ages)):
     if i == 0:
-        balance[i] = initial_gov_contribution
+        # Year 0: government grant + possible parental contribution
+        balance[i] = 1000
+        if age <= stop_contrib_age:
+            balance[i] += contribution
     else:
+        # Grow previous balance
         balance[i] = balance[i - 1] * (1 + (interest_rate / 100))
-        if start_age <= age <= stop_contrib_age:
+        
+        # Add contribution only if still contributing
+        if age <= stop_contrib_age:
             balance[i] += contribution
 
-# Create plot
-fig, ax = plt.subplots(figsize=(8, 4))
+# Plot
+fig, ax = plt.subplots(figsize=(10, 5))
 ax.plot(years, balance, color='blue', linewidth=2)
-ax.axvline(start_age, color='green', linestyle='--', label=f"Start Saving Age: {start_age}")
-ax.axvline(stop_contrib_age, color='red', linestyle='--', label=f"Stop Contrib Age: {stop_contrib_age}")
+ax.axvline(birth_year, color='green', linestyle='--', label=f"Start Saving (Year {birth_year})")
+ax.axvline(birth_year + stop_contrib_age + 1, color='red', linestyle='--', label=f"Stop Contrib Age: {stop_contrib_age} (Year {birth_year + stop_contrib_age})")
 
+# Formatter for Y axis
 def millions(x, pos):
     if abs(x) >= 1_000_000:
         return f'${x*1e-6:.1f}M'
@@ -38,19 +48,20 @@ def millions(x, pos):
         return f'${x:,.0f}'
 
 ax.yaxis.set_major_formatter(mtick.FuncFormatter(millions))
-ax.set_xlabel("Age")
+ax.set_xlabel("Calendar Year")
 ax.set_ylabel("Account Balance")
-ax.set_title("Growth of Savings Account Over Time (before withdrawal tax)")
+ax.set_title("Growth of Freedom Savings Account Over Time (before withdrawal tax)")
 ax.legend()
 ax.grid(True)
 
 # Show plot in Streamlit
 st.pyplot(fig)
 
-# Show balances at specific ages
-st.subheader("Balances at Key Ages")
+# Show balances at key years
+st.subheader("Balances at Key Years")
 
 for target_age in [18, 30, 60]:
-    if target_age <= end_age:
+    target_year = birth_year + target_age
+    if target_year <= years[-1]:
         bal = balance[target_age]
-        st.write(f"Balance at age {target_age}: {millions(bal, None)}")
+        st.write(f"Balance in year {target_year} (age {target_age}): {millions(bal, None)}")
